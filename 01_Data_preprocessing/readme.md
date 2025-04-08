@@ -1,0 +1,2 @@
+# Data preprocessing
+Each patient underwent a comprehensive evaluation protocol consisting of post-bronchodilator pulmonary function tests (PFT), nasal swab collection, fasting peripheral blood sampling, chest inspiratory phase CT scans, and completed a health assessment questionnaire. (Data_preprocessing.R)
