@@ -1,3 +1,10 @@
+##############################################################################
+# Script information                                                      
+# Title: Integration_clustering
+# Date: 2025-3-1
+##############################################################################
+
+
 ######################################################### Integration
 #load data
 iris1<-read.table("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/SNF_num.txt" ,header = T,sep = "\t")
