@@ -39,7 +39,7 @@ iris1_1<- iris1[, top_20_percent_vars]
 
 
 ##### 3.Categorical variables - SNPs associated with COPD or lung function were filtered.
-# SNPs associated with COPD or lung function
+# Input: SNPs associated with COPD or lung function
 # Clumping
 # Snp&p 2 columns, SNP format x:position:ref:alt
 df<-read.table("clump/METAsig.txt" ,header = T,sep = "\t")
