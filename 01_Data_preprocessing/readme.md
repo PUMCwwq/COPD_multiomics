@@ -1,5 +1,11 @@
 # Data acquirement and preprocessing
 Patients with a prior diagnose of COPD were recruited from five medical centers of Guizhou province, southwest China. Nasal swabs, blood samples, chest inspiratory phase CT scans, and baseline information were collected.
+
+The code (Data_preprocessing.R) includes 3 parts:
+1. KNN method for imputing missing values of radiomics.
+2. Continuous variables were normalized collectively.
+3. Categorical variables - SNPs associated with COPD or lung function were filtered.
+
 # Baseline information
 Baseline information including demographic data was collected from health assessment questionnaire. Laboratory tests were performed in the hospitals’ laboratory department.
 # Radiomics
