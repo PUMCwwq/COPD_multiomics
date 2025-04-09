@@ -1,5 +1,14 @@
-#########################################################   SNP
-####################################### Chi-square test
+##############################################################################
+# Script information                                                      
+# Title: Genomics_analysis
+# Date: 2025-3-1
+##############################################################################
+
+##### 2. Regulatory network identification
+### 2.1.
+
+
+# Chi-square test
 library(knitr)
 setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/SNP")
 df = read.table('again_risk_allele_recessive.txt', header = TRUE)
