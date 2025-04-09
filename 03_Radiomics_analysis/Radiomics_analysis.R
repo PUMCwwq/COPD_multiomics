@@ -1,24 +1,46 @@
-##################################################### CT
-rm(list=ls())
+##############################################################################
+# Script information                                                      
+# Title: Radiomics_analysis
+# Date: 2025-3-1
+##############################################################################
+
+##### 1. Differential radiomics feature analysis, and heatmap display
+### Wilcoxon rank sum test
+# Input: radiomics features. 
+# This example is the comparision between CS and SS&RS subtypes.
+df <- read.table("CT.txt", 
+                 header=T, 
+                 row.names=1, 
+                 sep="\t") 
+wilcox_data <- data.frame(meta=colnames(df)[ 6:ncol(df)]) 
+for(i in 6:ncol(df)){ 
+  print(i) 
+  wilcox_data[i- 5, 2] <- wilcox.test(df[,i] ~ CS,data = df,exact = FALSE)[[ "p.value"]] } 
+wilcox_data$fdr <- p.adjust(wilcox_data$V2,method = "fdr") 
+# calculate fdr and logFC  (rename CS as "1", rename SS&RS as "2")
+data_A <- df[c(which(df$CS == "1")),] 
+data_B <- df[c(which(df$CS == "2")),] 
+wilcox_data$A_AVE <- colMeans(data_A[ 6:ncol(data_A)])
+wilcox_data$B_AVE <- colMeans(data_B[ 6:ncol(data_B)])
+wilcox_data$minus <- colMeans(data_A[ 6:ncol(data_A)]) - colMeans(data_B[ 6:ncol(data_B)])
+wilcox_data$fc <- colMeans(data_A[ 6:ncol(data_A)]) / colMeans(data_B[ 6:ncol(data_B)])
+write.csv(wilcox_data,file="wilcox_out_CS.csv")
+# The subsequent filtering of FC > 1.2 or FC < 0.8 is done in Excel.
+# The code for comparisions between SS and RS&CS, and the comparision between RS and SS&CS were similar to the comparison above.
+
+### Differential radiomics feature heatmap display
 install.packages("pheatmap")
 library(pheatmap)
-#################################################### Subtype overall heatmap Heatmap
-setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM")
-data<-read.delim("heatmap_CT_newrank_2.txt",header = T,row.names = 1)
+# Input: differential radiomics features of three subtypes
+data<-read.delim("differential_CT.txt",header = T,row.names = 1)
 #Note that the number of columns is the same as the number of samples
-Groups<-read.table("groups_new_rank_2.txt",header = T,row.names = 1)
+Groups<-read.table("cluster.txt",header = T,row.names = 1)
 cluster<-Groups[,1]
 cluster<-as.data.frame(cluster)
-annotation_c<-cluster
-annotation_c
-rownames(annotation_c)<-rownames(Groups)
-
 data1<-scale(data)
-
 p<-pheatmap(data1, cluster_rows = T, cluster_cols = F,    
             show_rownames = F,       
             show_colnames = F,      
-            #annotation_col = annotation_c,  
             scale= "row",            
             border=F,              
             legend = F,
@@ -27,28 +49,20 @@ p<-pheatmap(data1, cluster_rows = T, cluster_cols = F,
 p 
 
 
-########################################################
-######################################################## 
-rm(list=ls())
-dev.off()
-dev.new()
+##### 2. PCA analysis
 library(ropls)
-
-data<-read.table("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/CT/CT_155_PCA.txt",header = TRUE,sep = "\t")
+# Input: Radiomics features
+data<-read.table("CT_for_PCA.txt",header = TRUE,sep = "\t")
 data$CLUSTER_MATCH<-as.character(data$CLUSTER_MATCH)
 head(data)
-# scale. = TRUE   indicates normalization of data before analysis
 #prcomp
-com1 <- prcomp(data[,6:160], center = TRUE,scale. = TRUE)
+com1 <- prcomp(data, center = TRUE,scale. = TRUE)
 summary(com1)
 #PCA
 #PC score；
 df1<-com1$x
 head(df1)
-#Column 5 of the iris dataset was merged
 df1<-data.frame(df1,data$CLUSTER_MATCH)
-head(df1)
-#The variance contribution rate of principal components was extracted and the axis title was generated.
 summ<-summary(com1)
 xlab<-paste0("PC1(",round(summ$importance[2,1]*100,2),"%)")
 ylab<-paste0("PC2(",round(summ$importance[2,2]*100,2),"%)")
@@ -59,32 +73,19 @@ p2<-ggplot(data = df1,aes(x=PC1,y=PC2,color=data.CLUSTER_MATCH))+
   guides(fill=F)
 p2+scale_fill_manual(values = c("purple","orange","blue","pink"))+
   scale_colour_manual(values = c("purple","orange","blue","pink"))
-write.csv(p2$data,file = "/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/CT/PCA_CT_155_C1_C2_C3.csv")
+write.csv(p2$data,file = "PCA_CT.csv")
 
 
-
-#######
-######Heat map of the LAA series -Whole lung goes to see, except for the differential LAA series and the calcification series, plus lung volume
-rm(list=ls())
+###### 3.Heatmap of emphysema, calcification, and volume associated features at level of whole lung
 install.packages("pheatmap")
 library(pheatmap)
-########################### 
-setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/CT")
+# Input: Differential emphysema, calcification, and volume associated features across subtypes
 data<-read.delim("Lung_index_heatmap_v2.txt",header = T,row.names = 1)
-#Note that the number of columns is the same as the number of samples
-Groups<-read.table("groups_rank_for_CT.txt",header = T,row.names = 1)
-cluster<-Groups[,1]
-cluster<-as.data.frame(cluster)
-annotation_c<-cluster
-annotation_c
-rownames(annotation_c)<-rownames(Groups)
-
-
-######The original scale refers to the default column normalization, here the transpose is to scale the rows to distinguish the difference between columns
+Groups<-read.table("cluster.txt",header = T,row.names = 1)
+cluster<-as.data.frame(Groups)
 data1<-log10(data)
 data1<-scale(data1)
 data1<-t(data1)
-#write.csv(data1,file="scaled_whole_CT_index.csv")
 p<-pheatmap(data1, cluster_rows = F, cluster_cols = F,     
             show_rownames = T,       
             show_colnames = F,      
@@ -93,18 +94,5 @@ p<-pheatmap(data1, cluster_rows = F, cluster_cols = F,
             border=F,               
             #legend = F,
             treeheight_row = 5,
-            #color = colorRampPalette(c("#D2A6C7","#D2A6C7","#D2A6C7","#D2A6C7","#D2A6C7","#D2A6C7","#D2A6C7","#D2A6C7","white","#83C75D","#83C75D","#83C75D","#83C75D","#83C75D","#83C75D","#83C75D","#83C75D"))(100)) 
-            #color = colorRampPalette(c("#349979","#349979","#349979","#349979","#a9c287","#a9c287","#a9c287","#a9c287","#cce982","#cce982","#cce982","#cce982","white","#F9CC76","#F9CC76","#F9CC76","#F9CC76","#dda717","#dda717","#dda717","#dda717","#ea6800","#ea6800","#ea6800","#ea6800"))(50)) 
-            #color = colorRampPalette(c("#349979","#349979","#349979","#349979","#a9c287","#a9c287","#a9c287","#a9c287","#cce982","#cce982","#cce982","#cce982","white","#ffae49","#ffae49","#ffae49","#ffae49","#dda717","#dda717","#dda717","#dda717","#ea6800","#ea6800","#ea6800","#ea6800"))(50)) 
-            #color = colorRampPalette(c("#349979","#349979","#349979","#349979","#cce982","#cce982","#cce982","#cce982","white","#fec739","#fec739","#fec739","#fec739","#ea6800","#ea6800","#ea6800","#ea6800"))(50)) 
-            #color = colorRampPalette(c("#3d71a3","#3d71a3","#3d71a3","#3d71a3","#64c8c8","#64c8c8","#64c8c8","#64c8c8","white","#fec739","#fec739","#fec739","#fec739","#ea6800","#ea6800","#ea6800","#ea6800"))(50)) 
-            #color = colorRampPalette(c("#349979","#349979","#349979","#349979","#cce982","#cce982","#cce982","#cce982","white","#3d71a3","#3d71a3","#3d71a3","#3d71a3","#3e266b","#3e266b","#3e266b","#3e266b"))(50)) 
-            #color = colorRampPalette(c("#3d71a3","#3d71a3","#3d71a3","#3d71a3","#3d71a3","#3d71a3","#3d71a3","#3d71a3","white","#cce982","#cce982","#cce982","#cce982","#cce982","#cce982","#cce982","#cce982"))(50)) 
-            #color = colorRampPalette(c("#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","white","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779"))(50))
-            #color = colorRampPalette(c("#cce0ea","#cce0ea","#cce0ea","#cce0ea","#cce0ea","#cce0ea","#cce0ea","#cce0ea","white","#f5d7c0","#f5d7c0","#f5d7c0","#f5d7c0","#f5d7c0","#f5d7c0","#f5d7c0","#f5d7c0"))(50))
-            #color = colorRampPalette(c("#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","white","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3"))(50))
-            #color = colorRampPalette(c("#98cadd","#98cadd","#98cadd","#98cadd","#98cadd","#98cadd","#98cadd","#98cadd","white","#da9599","#da9599","#da9599","#da9599","#da9599","#da9599","#da9599","#da9599"))(100))
-            #color = colorRampPalette(c("#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","white","#c16e71","#c16e71","#c16e71","#c16e71","#c16e71","#c16e71","#c16e71","#c16e71"))(100))  
-            #v2#color = colorRampPalette(c("#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","#61aacf","white","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779"))(100))  
             color = colorRampPalette(c("#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","#7570b3","white","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779","#feb779"))(100))
 p 
