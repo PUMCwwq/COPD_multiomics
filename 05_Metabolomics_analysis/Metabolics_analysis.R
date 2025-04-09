@@ -156,8 +156,22 @@ p<-pheatmap(data, cluster_rows = F, cluster_cols = F,
 
 
 ##### 5.OPLS-DA analysis
+set.seed(123)
+# Input: differential lipids identified across subtypes
+meta_pls<-read.table("lipid_OPLSDA.txt",header = TRUE,row.names = 1,sep = "\t")
+# Input: the subtype information which differential lipids belong to
+meta_hint<-read.table("OPLSDA_GROUP.txt",header = TRUE,row.names = 1,sep = "\t")
+CLUSTER <- meta_hint$CLUSTER
+CLUSTER <-as.factor(CLUSTER)
+# OPLS-DA
+meta_pls.plsda <- opls(meta_pls, CLUSTER, predI = 1,scale = "standard")
+# VIP
+vipVn <- meta_pls.plsda@vipVn  # getVipVn()
+vipVn_select <- vipVn[vipVn > 1] 
+write.csv(vipVn_select, VIP_score.csv")
 
 
+##### 6. Heatmap of subtype elevated lipids
 
 
 
