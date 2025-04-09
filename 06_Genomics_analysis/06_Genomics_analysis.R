@@ -55,8 +55,14 @@ write.csv(out,file="out_risk_allele.csv")
 # the variant-to-gene (V2G) approach was employed via the online platform Open Target Genetics (https://platform.opentargets.org/?ref=blog.opentargets.org).
 # The “variant” referred to the subtype-enriched SNPs identified in step 2.1.GWAS-based subtype enrichment.
 # Genes with V2G score > 0.05 were selected to constitute regulatory networks of each subtype (performed in excel).
-# The network plot was drawed according to genes in the regulatory networks manually.
 
 ### 2.3. Gene-gene interaction
+# Gene-gene interactions were considered if there was at least one evidence supporting interaction or co-expression between genes.
+# Gene-gene interactions were acquired from STRING (https://cn.string-db.org/).
+# The network plot was drawed according to genes in the regulatory networks manually.
 
+### 2.4. Enrichment analysis of genes in regulatory networks
+# Metascape was utilized (https://metascape.org/gp/index.html#/main/step1). Pathway database included Reactome, WikiPathway, and Gene Ontology.
+# Genes contained in the regulatory network of each subtype were used as the input for the Metascape
+# Enriched pathways and P values were acquired from Metascape. 
 
