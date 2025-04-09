@@ -52,10 +52,11 @@ write.csv(out,file="out_risk_allele.csv")
 # For each subtype, SNPs with OR > 1.2 and two-tailed Chi-square test P < 0.05 were defined as subtype-enriched SNPs (filtered in excel).
 
 ### 2.2. Functional genomics information
+# the variant-to-gene (V2G) approach was employed via the online platform Open Target Genetics (https://platform.opentargets.org/?ref=blog.opentargets.org).
+# The “variant” referred to the subtype-enriched SNPs identified in step 2.1.GWAS-based subtype enrichment.
+# Genes with V2G score > 0.05 were selected to constitute regulatory networks of each subtype (performed in excel).
+# The network plot was drawed according to genes in the regulatory networks manually.
 
-
-
-
-
+### 2.3. Gene-gene interaction
 
 
