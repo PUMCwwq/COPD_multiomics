@@ -169,9 +169,27 @@ meta_pls.plsda <- opls(meta_pls, CLUSTER, predI = 1,scale = "standard")
 vipVn <- meta_pls.plsda@vipVn  # getVipVn()
 vipVn_select <- vipVn[vipVn > 1] 
 write.csv(vipVn_select, VIP_score.csv")
+# Metabolites with a Variable Importance in the Projection (VIP) score > 1 were considered significant contributors to the model.
 
+# display the lipids with VIP>1 using heatmap
+# Input: lipids with VIP>1
+data<-read.delim("lipid_vip1.txt",header = T,row.names = 1)
+# Input:  the subtype information which lipids with VIP>1 belong to
+Groups<-read.table("group_lipid_vip1.txt",header = T,row.names = 1)
+cluster<-as.data.frame(Groups)
 
-##### 6. Heatmap of subtype elevated lipids
+data1<-scale(data)
+data1<-log10(data1+5)
+data1<-scale(data1)
+
+p<-pheatmap(data1, cluster_rows = F, cluster_cols = F,    
+            show_rownames = F,       
+            show_colnames = F,   
+            scale= "row",            
+            border=NA,             
+            legend = T,
+            color = colorRampPalette(c("#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","#DCEE8C","white","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF","#61AACF"))(100))
+p 
 
 
 
