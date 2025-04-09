@@ -138,6 +138,22 @@ RR[abs(RR) < 0.2 ] <- 0
 PP_filter_RR_filter <- RR * PP
 write.table(PP_filter_RR_filter, 'corr_SAM_3OMICS_p_0.05_r_0.02_new.txt', sep = '\t', col.names = NA, quote = FALSE)
 
+### display the lipid pattern using heatmap
+# Input: the correlation rho matrix of differential lipids from correlation analysis above
+data<-read.delim("correlation_lipids.txt",header = T,row.names = 1)
+Groups<-read.table("group_cor.txt",header = T,row.names = 1)
+cluster<-as.data.frame(Groups)
+# 9 color blocks in segments ranging from rho = -0.6 to NA to 1.
+p<-pheatmap(data, cluster_rows = F, cluster_cols = F,   
+            show_rownames = T,      
+            show_colnames = F,     
+            annotation_col = annotation_c,  
+            scale= "none",  
+            border=F,   
+            treeheight_row = 0,
+            legend = T,
+            color = colorRampPalette(c("#61AACF","#98CADD","#EAEFF6","white","#F9EFEF","#E9C6C6","#DA9599","#C16E71","#C16E71"))(9))
+
 
 ##### 5.OPLS-DA analysis
 
