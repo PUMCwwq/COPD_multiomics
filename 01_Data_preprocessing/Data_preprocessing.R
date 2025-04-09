@@ -5,7 +5,6 @@
 ##############################################################################
 
 ##### 1.KNN method for imputing missing values.
-BiocManager::install("TTR")
 install.packages("xts_0.14.0.tar.gz",repos = NULL)
 install.packages("quantmod_0.4.26.tar.gz",repos = NULL)
 install.packages("TTR_0.24.4.tar.gz",repos = NULL)
