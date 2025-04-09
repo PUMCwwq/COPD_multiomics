@@ -5,7 +5,7 @@
 ##############################################################################
 
 ##### 1.Multi-omics integration
-# losd the data
+# load the data
 # iris1: filtered continuous variables including radiomics, metabolomics, and microbiomics
 # iris2: filtered categorical variables including clumped SNPs
 iris1<-read.table("num.txt" ,header = T,sep = "\t")
