@@ -1,6 +1,12 @@
-rm(list=ls())
-######################################### INPUT_NUM  rank sum test
-setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM")
+##############################################################################
+# Script information                                                      
+# Title: Metabolomics_analysis
+# Date: 2025-3-1
+##############################################################################
+
+##### 1.Differential metabolomics feature analysis, and heatmap display
+# Wilcoxon rank sum test
+# Input: 
 df <- read.table("NUM_test.txt", 
                  header=T, 
                  row.names=1, 
