@@ -5,9 +5,10 @@
 ##############################################################################
 
 ##### 1.Differential metabolomics feature analysis, and heatmap display
-# Wilcoxon rank sum test
-# Input: 
-df <- read.table("NUM_test.txt", 
+### Wilcoxon rank sum test
+# Input: metabolomics features
+# This example is the comparision between CS and SS&RS subtypes.
+df <- read.table("metabolomics.txt", 
                  header=T, 
                  row.names=1, 
                  sep="\t") 
@@ -15,7 +16,7 @@ df <- read.table("NUM_test.txt",
 wilcox_data <- data.frame(meta=colnames(df)[ 6:ncol(df)]) 
 for(i in 6:ncol(df)){ 
   print(i) 
-  wilcox_data[i- 5, 2] <- wilcox.test(df[,i] ~ C3,data = df,exact = FALSE)[[ "p.value"]] } 
+  wilcox_data[i- 5, 2] <- wilcox.test(df[,i] ~ CS,data = df,exact = FALSE)[[ "p.value"]] } 
 wilcox_data$fdr <- p.adjust(wilcox_data$V2,method = "fdr") 
 #Calculate fdr # Calculate logFC
 data_A <- df[c(which(df$C3 == "1")),] 
@@ -24,28 +25,23 @@ wilcox_data$A_AVE <- colMeans(data_A[ 6:ncol(data_A)])
 wilcox_data$B_AVE <- colMeans(data_B[ 6:ncol(data_B)])
 wilcox_data$minus <- colMeans(data_A[ 6:ncol(data_A)]) - colMeans(data_B[ 6:ncol(data_B)])
 wilcox_data$fc <- colMeans(data_A[ 6:ncol(data_A)]) / colMeans(data_B[ 6:ncol(data_B)])
-write.csv(wilcox_data,file="wilcox_out_C3_NUM.csv")
+write.csv(wilcox_data,file="wilcox_out_CS_metabolomics.csv")
+# The subsequent filtering of FC > 1.2 or FC < 0.8 is done in Excel.
+# The code for comparisions between SS and RS&CS, and the comparision between RS and SS&CS were similar to the comparison above.
 
-##########  heatmap
+### Differential metabolomics feature heatmap display
 install.packages("pheatmap")
 library(pheatmap)
-setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM")
-data<-read.delim("heatmap_metabo_newrank_2.txt",header = T,row.names = 1)
+# Input: Differential metabolomics features
+data<-read.delim("heatmap_for_metabo.txt",header = T,row.names = 1)
 #Note that the number of columns is the same as the number of samples
-Groups<-read.table("groups_new_rank_2.txt",header = T,row.names = 1)
-cluster<-Groups[,1]
-cluster<-as.data.frame(cluster)
-annotation_c<-cluster
-annotation_c
-rownames(annotation_c)<-rownames(Groups)
-
+Groups<-read.table("cluster.txt",header = T,row.names = 1)
+cluster<-as.data.frame(Groups)
 data1<- log10(data+1) 
 data1<-scale(data1)
-
 p<-pheatmap(data1, cluster_rows = T, cluster_cols = F,   
             show_rownames = F,     
             show_colnames = F,      
-            #annotation_col = annotation_c,  
             scale= "row",            
             border=F,             
             legend = F,
@@ -54,23 +50,16 @@ p<-pheatmap(data1, cluster_rows = T, cluster_cols = F,
 p 
 
 
-
-### PCA      
-rm(list=ls())
-dev.off()
-dev.new()
+##### 2.PCA analysis
 library(ropls)
-
-### PCA was performed by combining SS/RS and CS
-data<-read.table("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/Metabo/metabo_input_408_C12C3_PCA.txt",header = TRUE,sep = "\t")
+# PCA was performed based on metabolomics; SS and RS were combined into one group when calculating the 95% confidence interval
+data<-read.table("metabo_for_PCA.txt",header = TRUE,sep = "\t")
 data$CLUSTER_MATCH<-as.character(data$CLUSTER_MATCH)
 head(data)
-# scale. = TRUE
-#prcomp函数 
-com1 <- prcomp(data[,3:410], center = TRUE,scale. = TRUE)
+#prcomp
+com1 <- prcomp(data, center = TRUE,scale. = TRUE)
 summary(com1)
 #PCA
-#PC score；
 df1<-com1$x
 head(df1)
 df1<-data.frame(df1,data$CLUSTER_MATCH)
@@ -86,28 +75,36 @@ p2<-ggplot(data = df1,aes(x=PC1,y=PC2,color=data.CLUSTER_MATCH))+
   guides(fill=F)
 p2+scale_fill_manual(values = c("purple","orange","blue","pink"))+
   scale_colour_manual(values = c("purple","orange","blue","pink"))
-write.csv(p2$data,file = "/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/Metabo/PCA_metabo_408_C12&C3.cs
+write.csv(p2$data,file = "PCA_metabo_SS&RS_CS.cs
 
-rm(list=ls())
-############################### Mann–Whitney U-test
-setwd("/NASdata_2/wuwq/COPD/OMIC_ALL_SUM/Metabo")
 
-df <- read.table("metabo_all_ANOVA.txt", 
-                 header=T, 
-                 row.names=1, 
-                 sep="\t")
+##### 3.KEGG pathway enrichment analysis
+# load the hsa_kegg annotation file acquired from https://www.kegg.jp/kegg 
+pathway_compounds <- readRDS("hsa_kegg_annotation.rds")
+# Background metabolites  (Input: all untargeted metabolites detected in this study)
+allkeggid<- read.delim("all_metabolite.txt",header = T)
+total <- right_join(pathway_compounds, allkeggid, by = "ID")
+total$id <- total$ID
+total<-total[,2:3]
+colnames(total)<-c("pathway","ID")
 
-wilcox_data <- data.frame(meta=colnames(df)[ 5:ncol(df)]) 
-for(i in 5:ncol(df)){ 
-  print(i) 
-  wilcox_data[i- 4, 2] <- wilcox.test(df[,i] ~ C3,data = df,exact = FALSE)[[ "p.value"]] } 
-wilcox_data$fdr <- p.adjust(wilcox_data$V2,method = "fdr") 
-#计算fdr #计算logFC 
-data_A <- df[c(which(df$C3 == "1")),] 
-data_B <- df[c(which(df$C3 == "2")),] 
-wilcox_data$A_AVE <- colMeans(data_A[ 5:ncol(data_A)])
-wilcox_data$B_AVE <- colMeans(data_B[ 5:ncol(data_B)])
-wilcox_data$minus <- colMeans(data_A[ 5:ncol(data_A)]) - colMeans(data_B[ 5:ncol(data_B)])
-wilcox_data$fc <- colMeans(data_A[ 5:ncol(data_A)]) / colMeans(data_B[ 5:ncol(data_B)])
-write.csv(wilcox_data,file="wilcox_out_C3_metabo_all.csv")
+# Enrichment results  Input: differential metabolites identified for each subtype previously
+# Elevated and attenuated metabolites were processed separately
+
+# CS_Elevated_SS&RS_attenuated 
+diffkeggid <-read.delim("kegg_CS_up.txt",header = T)
+x_CS <- clusterProfiler::enricher(gene = diffkeggid$ID,TERM2GENE = total,minGSSize = 1,pvalueCutoff = 1,qvalueCutoff = 1)
+write.csv(x_CS@result,file = "kegg_out_CS_up.csv")
+
+# SS&RS_Elevated_CS_attenuated 
+diffkeggid <-read.delim("kegg_SS&RS_up.txt",header = T)
+x_SS&RS <- clusterProfiler::enricher(gene = diffkeggid$ID,TERM2GENE = total,minGSSize = 1,pvalueCutoff = 1,qvalueCutoff = 1)
+write.csv(x_SS&RS@result,file = "kegg_out_SS&RS_up.csv")
+
+
+##### 4.Spearman’s correlation analysis
+
+
+
+
 
