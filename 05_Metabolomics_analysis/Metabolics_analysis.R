@@ -118,7 +118,6 @@ filled_dataset <- knnImputation(data, k = 10)
 
 #Standardization does not affect the calculation of correlation coefficients, but it allows the data to follow a structure with a mean of 0 and a standard deviation of 1, ensuring homoscedasticity.
 sam_metabo <- scale(filled_dataset)
-
 # Symmetric matrix of correlation coefficients between all variables
 corr_matrix <- corr.test(sam_metabo, method = 'spearman')
 corr_matrix$r    # matrix of correlation rho
@@ -177,11 +176,9 @@ data<-read.delim("lipid_vip1.txt",header = T,row.names = 1)
 # Input:  the subtype information which lipids with VIP>1 belong to
 Groups<-read.table("group_lipid_vip1.txt",header = T,row.names = 1)
 cluster<-as.data.frame(Groups)
-
 data1<-scale(data)
 data1<-log10(data1+5)
 data1<-scale(data1)
-
 p<-pheatmap(data1, cluster_rows = F, cluster_cols = F,    
             show_rownames = F,       
             show_colnames = F,   
