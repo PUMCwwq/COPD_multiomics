@@ -4,7 +4,7 @@
 # Date: 2025-3-1
 ##############################################################################
 
-##### 1.KNN method for imputing missing values of radiomics.
+##### 1.KNN method for imputing missing values.
 BiocManager::install("TTR")
 install.packages("xts_0.14.0.tar.gz",repos = NULL)
 install.packages("quantmod_0.4.26.tar.gz",repos = NULL)
