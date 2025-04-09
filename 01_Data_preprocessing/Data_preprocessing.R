@@ -33,7 +33,7 @@ write.csv(filled_dataset,file="CT_knn.csv")
 ##### 3.Categorical variables - SNPs associated with COPD or lung function were filtered.
 # SNPs associated with COPD or lung function
 # Clumping
-### Snp&p 2 columns, SNP format x:position:ref:alt
+# Snp&p 2 columns, SNP format x:position:ref:alt
 df<-read.table("clump/METAsig.txt" ,header = T,sep = "\t")
 for (i in c(1:22, 'X')){
   tmp<-df[df$CHR==i,]
@@ -56,7 +56,7 @@ for (i in c(1:22, 'X')){
   )
   system(fun2)
 }
-##The results of clump on 22 chromosomes were read
+# The results of clump on 22 chromosomes were read
 f=list.files('clump/')
 f<-f[grep('.clumped',f)]
 clumped<-read.table(paste0('clump/',f[1]),
