@@ -65,4 +65,4 @@ write.csv(out,file="out_risk_allele.csv")
 # Metascape was utilized (https://metascape.org/gp/index.html#/main/step1). Pathway database included Reactome, WikiPathway, and Gene Ontology.
 # Genes contained in the regulatory network of each subtype were used as the input for the Metascape
 # Enriched pathways and P values were acquired from Metascape. 
-
+# The bar plot was drawed in excels manually.
