@@ -1,11 +1,5 @@
 # Data acquirement and preprocessing
 Patients with a prior diagnose of COPD were recruited from five medical centers of Guizhou province, southwest China. Nasal swabs, blood samples, chest inspiratory phase CT scans, and baseline information were collected.
-
-The code (Data_preprocessing.R) includes 3 parts:
-1. KNN method for imputing missing values of radiomics.
-2. Continuous variables were normalized collectively.
-3. Categorical variables - SNPs associated with COPD or lung function were filtered.
-
 # Baseline information
 Baseline information including demographic data was collected from health assessment questionnaire. Laboratory tests were performed in the hospitals’ laboratory department.
 # Radiomics
@@ -18,3 +12,8 @@ The plasma was used for non-targeted metabolomics. LC-MS/MS analyses for polar m
 Genotyping was carried out by WeGene Clinical Laboratory (Shenzhen) utilizing the Illumina Infinium Chinese Genotyping Array BeadChip (Illumina WeGene V3 Arrays, covering approximately 700,000 variants).
 # Preprocessing
 Radiomics, metabolomics, and microbiomics data, represented as continuous variables, were normalized collectively. The top 20% highly variable features were selected for further integration and clustering. Genomics data, treated as categorical variables, were processed separately. (Data_preprocessing.R)
+
+The code (Data_preprocessing.R) includes 3 parts:
+1. KNN method for imputing missing values of radiomics.
+2. Continuous variables were normalized collectively.
+3. Categorical variables - SNPs associated with COPD or lung function were filtered.
