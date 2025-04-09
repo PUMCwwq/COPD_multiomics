@@ -103,6 +103,49 @@ write.csv(x_SS&RS@result,file = "kegg_out_SS&RS_up.csv")
 
 
 ##### 4.Spearman’s correlation analysis
+### correlation between lipids to get lipid patterns, and correlation between lipids and baseline information (including clinical indicators)
+library(corrplot)
+library(psych)
+
+# Impute missing values of baseline information using the KNN method (Input: baseline information and differential lipids identified)
+# load the baseline information
+data <- read.delim("baseline_lipids.txt",quote = "", 
+                   row.names = 1, 
+                   stringsAsFactors = FALSE)
+# KNN
+set.seed(123)
+filled_dataset <- knnImputation(data, k = 10)
+
+#Standardization does not affect the calculation of correlation coefficients, but it allows the data to follow a structure with a mean of 0 and a standard deviation of 1, ensuring homoscedasticity.
+sam_metabo <- scale(filled_dataset)
+
+# Symmetric matrix of correlation coefficients between all variables
+corr_matrix <- corr.test(sam_metabo, method = 'spearman')
+corr_matrix$r    # matrix of correlation rho
+corr_matrix$p    # matrix of P
+# download the rho and P
+write.table(corr_matrix$r, 'corr_SAM_sigmetabo_R.txt', sep = '\t', col.names = NA, quote = FALSE)
+write.table(corr_matrix$p, 'corr_SAM_sigmetabo_P.txt', sep = '\t', col.names = NA, quote = FALSE)
+# Based on the previous step, filter for p < 0.05
+PP<-corr_matrix$p
+PP[PP >= 0.05] <- -1
+PP[PP < 0.05 & PP>=0 ] <- 1
+PP[PP == -1] <- 0
+PP_filter <- RR * PP
+write.table(PP_filter, 'corr_SAM_sigmetabo_P_0.05.txt', sep = '\t', col.names = NA, quote = FALSE)
+# Based on the previous step, further filter for p < 0.05 and |R| >= 0.2.
+RR[abs(RR) < 0.2 ] <- 0
+PP_filter_RR_filter <- RR * PP
+write.table(PP_filter_RR_filter, 'corr_SAM_3OMICS_p_0.05_r_0.02_new.txt', sep = '\t', col.names = NA, quote = FALSE)
+
+
+##### 5.OPLS-DA analysis
+
+
+
+
+
+
 
 
 
