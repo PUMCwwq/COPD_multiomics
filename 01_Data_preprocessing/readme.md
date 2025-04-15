@@ -11,9 +11,9 @@ The plasma was used for non-targeted metabolomics. LC-MS/MS analyses for polar m
 # Genomics
 Genotyping was carried out by WeGene Clinical Laboratory (Shenzhen) utilizing the Illumina Infinium Chinese Genotyping Array BeadChip (Illumina WeGene V3 Arrays, covering approximately 700,000 variants).
 # Preprocessing
-Radiomics, metabolomics, and microbiomics data, represented as continuous variables, were normalized collectively. The top 20% highly variable features were selected for further integration and clustering. Genomics data, treated as categorical variables, were processed separately. (Data_preprocessing.R)
+Radiomics, metabolomics, and microbiomics data, represented as continuous variables, were normalized collectively. The top 20% highly variable features were selected for further integration and clustering. Genomics data, treated as categorical variables, were processed separately.
 
-The code (Data_preprocessing.R) includes 3 parts:
-1. KNN method for imputing missing values of radiomics.
-2. Continuous variables were normalized collectively.
-3. Categorical variables - SNPs associated with COPD or lung function were filtered.
+The code includes 3 parts:
+1. KNN method for imputing missing values of radiomics. (Imputing_missing_values.R)
+2. Continuous variables were normalized collectively. (Continuous_variables_treatment.R)
+3. Categorical variables - SNPs associated with COPD or lung function were filtered. (Categorical_variables_treatment.R)
